@@ -12,10 +12,12 @@
 #import "DetailViewController.h"
 
 
-@interface MovieGridViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface MovieGridViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate>
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, strong) NSArray *movies;
+@property (nonatomic, strong) NSArray *filteredMovies;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 @end
 
@@ -27,6 +29,8 @@
     
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
+    self.searchBar.delegate = self;
+    
     
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *) self.collectionView.collectionViewLayout;
     
@@ -75,6 +79,8 @@
 
             self.movies = dataDictionary[@"results"];
             
+            self.filteredMovies = self.movies;
+            
             [self.collectionView reloadData];
         }
         
@@ -92,7 +98,7 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     
-    return self.movies.count;
+    return self.filteredMovies.count;
     
 }
 
@@ -100,7 +106,7 @@
     
     MovieCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MovieCollectionViewCell" forIndexPath:indexPath];
     
-    NSDictionary *movie = self.movies[indexPath.item];
+    NSDictionary *movie = self.filteredMovies[indexPath.item];
     
     NSString *baseUrl = @"https://image.tmdb.org/t/p/w500";
     
@@ -126,6 +132,35 @@
     
 }
 
+//Search bar
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    
+    if(searchText.length != 0){
+        
+        
+        
+        
+    } else{
+        
+        
+    }
+    
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar{
+    
+    self.searchBar.showsCancelButton = YES;
+    
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    
+    self.searchBar.showsCancelButton = NO;
+    self.searchBar.text = @"";
+    [self.searchBar resignFirstResponder];
+    
+}
  
  #pragma mark - Navigation
  
@@ -143,7 +178,13 @@
     detailsViewController.movie = movie;
 
  }
- 
+
+
+- (IBAction)onTap:(id)sender {
+    
+    [self.view endEditing:YES];
+}
+
 
 
 @end

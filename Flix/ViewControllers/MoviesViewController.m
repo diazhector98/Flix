@@ -101,7 +101,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"movieCell"];
+    MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"movieCell" forIndexPath : indexPath];
     
     NSDictionary *movie = self.movies[indexPath.row];
     
