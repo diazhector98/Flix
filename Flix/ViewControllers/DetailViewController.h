@@ -10,4 +10,12 @@
 
 @interface DetailViewController : UIViewController
 
+@property (nonatomic, strong) NSDictionary *movie;
+
+@property (weak, nonatomic) IBOutlet UIImageView *coverImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *movieImageView;
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *synopsisLabel;
+
+
 @end
