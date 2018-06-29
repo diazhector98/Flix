@@ -29,6 +29,7 @@
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
 
+@property (weak, nonatomic) IBOutlet UIButton *starButton;
 
 
 @end

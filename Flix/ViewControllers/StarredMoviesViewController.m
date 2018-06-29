@@ -7,8 +7,11 @@
 //
 
 #import "StarredMoviesViewController.h"
+#import "MovieCell.h"
 
-@interface StarredMoviesViewController ()
+@interface StarredMoviesViewController () <UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, strong) NSArray *movies;
 
 @end
 
@@ -17,6 +20,56 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    self.tableView.delegate = self;
+    
+    self.tableView.dataSource = self;
+    
+    
+}
+
+-(void) fetchStarredMovies {
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    NSArray *movieIdArray = [defaults arrayForKey:@"movieId_array"];
+    
+    NSLog(@"%@", movieIdArray);
+    
+    
+    for(NSString *stringId in movieIdArray) {
+        
+        
+    }
+    
+    
+}
+
+-(void) fetchMovie:(NSString *) stringId {
+    
+    
+    
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    
+    return 1;
+    
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    return 20;
+    
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    
+    MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"StarCell" forIndexPath: indexPath];
+    
+    return cell;
+    
 }
 
 - (void)didReceiveMemoryWarning {

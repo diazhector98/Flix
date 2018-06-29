@@ -164,6 +164,7 @@
     
     cell.synopsisLabel.text = synopsis;
     
+    
     return cell;
 }
 
@@ -172,7 +173,6 @@
     MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"movieCell" forIndexPath : indexPath];
     
     cell.titleLabel.textColor = [UIColor blueColor ];
-    
     
 }
 

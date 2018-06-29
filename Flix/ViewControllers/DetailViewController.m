@@ -31,6 +31,18 @@
     frame.origin.x += offset;
     
     self.tableView.frame = frame;
+    
+    //Check if it's starred
+    
+    if([self isStarred]){
+        
+        UIImage *btnImage = [UIImage imageNamed:@"starFill"];
+        [self.starButton setImage:btnImage forState:UIControlStateNormal];
+        
+    } else {
+        UIImage *btnImage = [UIImage imageNamed:@"starClear"];
+        [self.starButton setImage:btnImage forState:UIControlStateNormal];
+    }
 
     
     //NSMutableArray
@@ -121,7 +133,6 @@
     
     self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width, maxHeight);
     
-    NSLog(@"%@", self.movie[@"vote_average"]);
     
 }
 
@@ -130,8 +141,6 @@
     NSString *movieId = [NSString stringWithFormat:@"%@", self.movie[@"id"]];
     
     NSString *urlString = [NSString stringWithFormat:@"%@%@%@",@"https://api.themoviedb.org/3/movie/", movieId, @"/reviews?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed&language=en-US&page=1"];
-    
-    NSLog(urlString);
     
     NSURL *url = [NSURL URLWithString:urlString];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
@@ -161,15 +170,12 @@
                 
                 NSString *stringReview = [NSString stringWithFormat:@"%@", review[@"content"] ];
                 
-                NSLog(@"%@", stringReview);
-                
                 [self.stringReviews addObject:stringReview];
                 
                 [self.tableView reloadData];
 
             }
             
-            NSLog(@"%@", self.reviews);
             
             [self.tableView reloadData];
             
@@ -209,8 +215,6 @@
     
     NSString *reviewString = [NSString stringWithFormat:@"%@", self.stringReviews[indexPath.row]];
     
-    NSLog(@"%@", reviewString);
-    
     cell.reviewLabel.text = reviewString;
     
     return cell;
@@ -225,8 +229,6 @@
     CGFloat offset = self.synopsisLabel.frame.size.width + 40;;
 
     if(self.segmentedControl.selectedSegmentIndex == 1){
-        
-        NSLog(@"1 Selected");
         
         [UIView animateWithDuration:1 animations:^{
         
@@ -276,6 +278,131 @@
     
     
 }
+
+- (BOOL) isStarred {
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    NSArray *movieIdArray = [defaults arrayForKey:@"movieId_array"];
+    
+    NSLog(@"%@", movieIdArray);
+    
+    NSString *movieId = self.movie[@"id"];
+    
+    NSLog(@"%@", movieId);
+
+    
+    if([movieIdArray containsObject:movieId]){
+        
+        return true;
+        
+    }
+    
+    return false;
+}
+
+//Starring
+
+- (IBAction)starTapped:(id)sender {
+    
+    
+    if([self isStarred ]) {
+        
+        [self unstarMovie ];
+        
+    } else {
+        [self starMovie];
+    }
+
+}
+
+-(void) starMovie {
+    
+    NSLog(@"Starred");
+
+    NSString *movieId = self.movie[@"id"];
+    
+    //Get array and convert it to mutable array
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    NSArray *movieIdArray = [defaults arrayForKey:@"movieId_array"];
+    
+    NSLog(@"%@", movieIdArray);
+    
+    NSMutableArray *mutableMovieArray = [[NSMutableArray alloc ] initWithArray:movieIdArray];
+    
+    //Add string id to mutable array
+    [mutableMovieArray addObject: movieId];
+    
+    NSLog(@"%@", mutableMovieArray);
+    
+    //Convert mutable array to array and store it to nsuserdefaults
+    
+    NSArray *newMovieIdArray = [mutableMovieArray copy];
+    
+    [defaults setObject:newMovieIdArray forKey:@"movieId_array"];
+    
+    [defaults synchronize];
+    
+    UIImage *btnImage = [UIImage imageNamed:@"starFill"];
+    
+    [self.starButton setImage:btnImage forState:UIControlStateNormal];
+    
+}
+
+-(void) unstarMovie {
+    
+    NSLog(@"Unstarred");
+    
+    NSString *movieId = self.movie[@"id"];
+    
+    //Get array and convert it to mutable array
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    NSArray *movieIdArray = [defaults arrayForKey:@"movieId_array"];
+    
+    NSLog(@"%@", movieIdArray);
+    
+    NSMutableArray *mutableMovieArray = [[NSMutableArray alloc ] initWithArray:movieIdArray];
+    
+    NSMutableArray *arrayWithoutMovie = [[NSMutableArray alloc] init];
+    
+    //Go through the movie array and add it to the new array if it is not the movie
+    
+    for(NSString *object in movieIdArray){
+        
+        NSString *objectId = [NSString stringWithFormat:@"%@", object];
+        
+        NSLog(objectId);
+        
+        if(object != movieId) {
+            
+            [arrayWithoutMovie addObject:object];
+            
+        }
+        
+    }
+    
+    NSLog(@"%@", arrayWithoutMovie);
+    
+    //Convert mutable array to array and store it to nsuserdefaults
+    
+    NSArray *newMovieIdArray = [arrayWithoutMovie copy];
+    
+    [defaults setObject:newMovieIdArray forKey:@"movieId_array"];
+    
+    [defaults synchronize];
+    
+    
+    UIImage *btnImage = [UIImage imageNamed:@"starClear"];
+    
+    [self.starButton setImage:btnImage forState:UIControlStateNormal];
+
+    
+}
+
 
 
 - (void)didReceiveMemoryWarning {

@@ -196,7 +196,6 @@
     
     [self.collectionView reloadData];
 
-    
 }
  
  #pragma mark - Navigation
@@ -204,6 +203,8 @@
 //Segmented Control
 
 - (IBAction)didChangeSelection:(id)sender {
+    
+    NSLog(@"Segmented Control change");
     
     self.movies = NULL;
     
