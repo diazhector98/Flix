@@ -164,7 +164,6 @@
     self.searchBar.showsCancelButton = YES;
     
     [self.collectionView reloadData];
-
     
 }
 

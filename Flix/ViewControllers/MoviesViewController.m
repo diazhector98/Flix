@@ -41,13 +41,16 @@
 //    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
         
     self.tableView.delegate = self;
+    
     [self.activityIndicator startAnimating];
     
     
     [self handleMovies];
     
     self.refreshControl = [[UIRefreshControl alloc] init];
+    
     [self.refreshControl addTarget:self action:@selector(handleMovies) forControlEvents: UIControlEventValueChanged];
+    
     [self.tableView insertSubview:self.refreshControl atIndex:0];
     
 }
@@ -99,6 +102,8 @@
             
             self.movies = dataDictionary[@"results"];
             
+            self.filteredMovies = self.movies;
+            
             [self.tableView reloadData];
         }
         
@@ -117,7 +122,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     
-    return self.movies.count;
+    return self.filteredMovies.count;
     
 }
 
@@ -137,7 +142,7 @@
     
     cell.selectedBackgroundView = backgroundView;
     
-    NSDictionary *movie = self.movies[indexPath.row];
+    NSDictionary *movie = self.filteredMovies[indexPath.row];
     
     NSString *title = movie[@"title"];
     
@@ -186,7 +191,41 @@
 
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+   
+    if(searchText.length != 0){
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title contains[cd] %@", searchText];
+        
+        self.filteredMovies = [self.movies filteredArrayUsingPredicate:predicate];
+        
+    } else{
+        
+        self.filteredMovies = self.movies;
+        
+    }
     
+    [self.tableView reloadData];
+    
+    
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar{
+    
+    self.searchBar.showsCancelButton = YES;
+    
+    [self.tableView reloadData];
+    
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    
+    self.searchBar.showsCancelButton = NO;
+    
+    self.searchBar.text = @"";
+    
+    [self.searchBar resignFirstResponder];
+    
+    [self.tableView reloadData];
     
     
 }
@@ -200,12 +239,11 @@
     
     NSIndexPath *indexPath = [self.tableView indexPathForCell:tappedCell];
     
-    NSDictionary *movie = self.movies[indexPath.row];
+    NSDictionary *movie = self.filteredMovies[indexPath.row];
     
     DetailViewController *detailsViewController = [segue destinationViewController];
     
     detailsViewController.movie = movie;
-    
     
     
 }
