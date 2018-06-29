@@ -17,6 +17,7 @@
 @property (nonatomic, strong) NSArray *movies;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
 
 @end
 
@@ -28,24 +29,44 @@
     
     self.tableView.dataSource = self;
     
-    self.navigationController.navigationBar.barTintColor = [UIColor blackColor];
-    
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+//    self.navigationController.navigationBar.barTintColor = [UIColor clearColor];
+//    
+//    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
         
     self.tableView.delegate = self;
     [self.activityIndicator startAnimating];
     
-    [self fetchMovies];
+    
+    [self handleMovies];
     
     self.refreshControl = [[UIRefreshControl alloc] init];
-    [self.refreshControl addTarget:self action:@selector(fetchMovies) forControlEvents: UIControlEventValueChanged];    
+    [self.refreshControl addTarget:self action:@selector(handleMovies) forControlEvents: UIControlEventValueChanged];
     [self.tableView insertSubview:self.refreshControl atIndex:0];
     
 }
 
--(void) fetchMovies {
+-(void) handleMovies {
     
-    NSURL *url = [NSURL URLWithString:@"https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"];
+    NSInteger index = [self.segmentedControl selectedSegmentIndex];
+    
+    NSLog(@"%i", index);
+    
+    NSArray *categories = @[@"now_playing", @"popular", @"top_rated"];
+    
+    [self fetchMovies:categories[index]];
+    
+    [self.tableView reloadData];
+    
+    
+}
+
+-(void) fetchMovies: (NSString *) category {
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@%@%@",@"https://api.themoviedb.org/3/movie/", category, @"?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"];
+
+    NSLog(urlString);
+    
+    NSURL *url = [NSURL URLWithString:urlString];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -56,7 +77,7 @@
             
             UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Try Again" style: UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                 
-                [self fetchMovies];
+                [self fetchMovies: category];
                 
             }];
             
@@ -143,6 +164,16 @@
     
 }
 
+- (IBAction)changedCategory:(id)sender {
+    
+    self.movies = NULL;
+    
+    [self.tableView reloadData];
+    
+    [self handleMovies];
+    
+    
+}
 
 #pragma mark - Navigation
 

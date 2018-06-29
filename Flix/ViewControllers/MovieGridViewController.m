@@ -36,10 +36,6 @@
     
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *) self.collectionView.collectionViewLayout;
     
-    self.navigationController.navigationBar.barTintColor = [UIColor blackColor];
-    
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    
     layout.minimumInteritemSpacing = 5;
     layout.minimumLineSpacing = 5;
     

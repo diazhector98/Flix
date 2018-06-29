@@ -22,6 +22,7 @@
     // Do any additional setup after loading the view.
     
     
+    //Images
     NSString *baseUrl = @"https://image.tmdb.org/t/p/w500";
     
     NSString *posterUrlString = self.movie[@"poster_path"];
@@ -42,17 +43,65 @@
     
     [self.coverImageView setImageWithURL:coverUrl];
     
+    //Labels
+    
     self.nameLabel.text = self.movie[@"title"];
+    self.bigTitleLabel.text = self.movie[@"title"];
     
     self.synopsisLabel.text = self.movie[@"overview"];
     
-    [self.nameLabel sizeToFit];
+//    [self.nameLabel sizeToFit];
     [self.synopsisLabel sizeToFit];
     
-    [UIView animateWithDuration:0.75 animations:^{
+//    Date
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc ] init];
+    formatter.dateFormat = @"yyyy-MM-dd";
+
+    NSString *rawDateString = [NSString stringWithFormat:@"%@", self.movie[@"release_date"]];
+    
+    NSDate *date = [formatter dateFromString:rawDateString];
+    
+    
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateStyle = NSDateFormatterMediumStyle;
+    dateFormatter.timeStyle = NSDateFormatterNoStyle;
+    dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    
+    NSString *finalDateString = [dateFormatter stringFromDate:date];
+    
+    self.dateLabel.text = finalDateString;
+    
+    //Popularity
+    
+    double vote_average = [self.movie[@"vote_average"] doubleValue];
+    
+    self.averageLabel.text = [NSString stringWithFormat:@"%.1f", vote_average];
+    
+    
+    if(vote_average <= 5){
         
-        self.movieImageView.frame = CGRectMake(self.movieImageView.frame.origin.x, self.movieImageView.frame.origin.y, 100 , 140);
-    }];
+        self.averageLabel.textColor = UIColor.redColor;
+        
+    } else if (vote_average < 8){
+        
+        self.averageLabel.textColor = [UIColor colorWithRed:0.96 green:0.80 blue:0.26 alpha:1.0];
+        
+    } else {
+        
+        self.averageLabel.textColor = UIColor.greenColor;
+        
+    }
+    
+    [self.synopsisLabel sizeToFit];
+    
+    CGFloat maxHeight = self.synopsisLabel.frame.origin.y + self.synopsisLabel.frame.size.height + 30;
+    
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width, maxHeight);
+    
+    NSLog(@"%@", self.movie[@"vote_average"]);
+    
     
     
     
