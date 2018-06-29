@@ -19,6 +19,8 @@
 @property (nonatomic, strong) NSArray *filteredMovies;
 @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
+
+
 @end
 
 @implementation MovieGridViewController
@@ -138,19 +140,26 @@
     
     if(searchText.length != 0){
         
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title contains[cd] %@", searchText];
         
-        
+        self.filteredMovies = [self.movies filteredArrayUsingPredicate:predicate];
         
     } else{
         
+        self.filteredMovies = self.movies;
         
     }
+    
+    [self.collectionView reloadData];
     
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar{
     
     self.searchBar.showsCancelButton = YES;
+    
+    [self.collectionView reloadData];
+
     
 }
 
@@ -159,6 +168,9 @@
     self.searchBar.showsCancelButton = NO;
     self.searchBar.text = @"";
     [self.searchBar resignFirstResponder];
+    
+    [self.collectionView reloadData];
+
     
 }
  
@@ -171,7 +183,7 @@
     
     NSIndexPath *indexPath = [self.collectionView indexPathForCell:tappedCell];
     
-    NSDictionary *movie = self.movies[indexPath.row];
+    NSDictionary *movie = self.filteredMovies[indexPath.row];
     
     DetailViewController *detailsViewController = [segue destinationViewController];
     
@@ -179,11 +191,6 @@
 
  }
 
-
-- (IBAction)onTap:(id)sender {
-    
-    [self.view endEditing:YES];
-}
 
 
 

@@ -103,6 +103,12 @@
     
     MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"movieCell" forIndexPath : indexPath];
     
+    UIView *backgroundView = [[UIView alloc] init];
+    
+    backgroundView.backgroundColor = UIColor.redColor;
+    
+    cell.selectedBackgroundView = backgroundView;
+    
     NSDictionary *movie = self.movies[indexPath.row];
     
     NSString *title = movie[@"title"];
@@ -126,6 +132,15 @@
     cell.synopsisLabel.text = synopsis;
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"movieCell" forIndexPath : indexPath];
+    
+    cell.titleLabel.textColor = [UIColor blueColor ];
+    
+    
 }
 
 

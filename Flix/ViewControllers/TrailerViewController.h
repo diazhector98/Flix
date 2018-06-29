@@ -10,4 +10,9 @@
 
 @interface TrailerViewController : UIViewController
 
+@property (weak, nonatomic) IBOutlet UIWebView *webView;
+
+@property (nonatomic, strong) NSDictionary *movie;
+
+
 @end
