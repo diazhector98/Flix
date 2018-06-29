@@ -19,6 +19,8 @@
 @property (nonatomic, strong) NSArray *filteredMovies;
 @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
+@property (weak, nonatomic) IBOutlet UISegmentedControl *segmentControl;
+
 
 
 @end
@@ -56,13 +58,30 @@
     
     layout.itemSize = CGSizeMake(width, height);
     
-    [self fetchMovies];
+    [self handleMovies];
 
 }
 
--(void) fetchMovies {
+-(void) handleMovies {
     
-    NSURL *url = [NSURL URLWithString:@"https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"];
+    NSInteger index = [self.segmentControl selectedSegmentIndex];
+    
+    NSLog(@"%i", index);
+    
+    NSArray *categories = @[@"now_playing", @"popular", @"top_rated"];
+    
+    [self fetchMovies:categories[index]];
+    
+    [self.collectionView reloadData];
+    
+    
+}
+
+-(void) fetchMovies: (NSString *) category {
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@%@%@",@"https://api.themoviedb.org/3/movie/", category, @"?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -72,7 +91,9 @@
             UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Cannot Get Movies" message:@"Internet connection appears to be offline" preferredStyle: UIAlertControllerStyleAlert];
             
             UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Try Again" style: UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                                
+                
+                [self fetchMovies:category ];
+                
             }];
             
             [alert addAction: cancelAction];
@@ -179,7 +200,18 @@
 }
  
  #pragma mark - Navigation
- 
+
+//Segmented Control
+
+- (IBAction)didChangeSelection:(id)sender {
+    
+    self.movies = NULL;
+    
+    [self.collectionView reloadData];
+    
+    [self handleMovies];
+    
+}
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
