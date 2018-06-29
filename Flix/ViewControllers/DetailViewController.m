@@ -9,9 +9,10 @@
 #import "DetailViewController.h"
 #import "UIImageView+AFNetworking.h"
 #import "TrailerViewController.h"
+#import "ReviewCell.h"
 
 
-@interface DetailViewController ()
+@interface DetailViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @end
 
@@ -20,6 +21,26 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    //Change position of table view
+    
+    CGFloat offset = self.synopsisLabel.frame.size.width + 40;;
+    
+    CGRect frame = self.tableView.frame;
+    
+    frame.origin.x += offset;
+    
+    self.tableView.frame = frame;
+
+    
+    //NSMutableArray
+    
+    self.stringReviews = [[NSMutableArray alloc] init ];
+    
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    
+    [self fetchReviews];
     
     
     //Images
@@ -102,10 +123,160 @@
     
     NSLog(@"%@", self.movie[@"vote_average"]);
     
+}
+
+-(void) fetchReviews{
+    
+    NSString *movieId = [NSString stringWithFormat:@"%@", self.movie[@"id"]];
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@%@%@",@"https://api.themoviedb.org/3/movie/", movieId, @"/reviews?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed&language=en-US&page=1"];
+    
+    NSLog(urlString);
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error != nil) {
+            NSLog(@"%@", [error localizedDescription]);
+            
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Cannot Get Movies" message:@"Internet connection appears to be offline" preferredStyle: UIAlertControllerStyleAlert];
+            
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Try Again" style: UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                
+            }];
+            
+            [alert addAction: cancelAction];
+            
+            [self presentViewController:alert animated:YES completion:nil];
+            
+            
+        }
+        else {
+            NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+            
+            self.reviews = dataDictionary[@"results"];
+            
+            for(NSDictionary *review in dataDictionary[@"results"]){
+                
+                NSString *stringReview = [NSString stringWithFormat:@"%@", review[@"content"] ];
+                
+                NSLog(@"%@", stringReview);
+                
+                [self.stringReviews addObject:stringReview];
+                
+                [self.tableView reloadData];
+
+            }
+            
+            NSLog(@"%@", self.reviews);
+            
+            [self.tableView reloadData];
+            
+        }
+        
+       
+    }];
+    [task resume];
+    
+    
+}
+
+//Table View
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    
+    return 100;
+    
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    return self.reviews.count;
+    
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    
+    return 1;
+    
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    ReviewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ReviewCell" forIndexPath:indexPath];
+    
+    NSString *reviewString = [NSString stringWithFormat:@"%@", self.stringReviews[indexPath.row]];
+    
+    NSLog(@"%@", reviewString);
+    
+    cell.reviewLabel.text = reviewString;
+    
+    return cell;
+    
+    
+}
+
+//Segmented Control
+
+- (IBAction)controlChanged:(id)sender {
+    
+    CGFloat offset = self.synopsisLabel.frame.size.width + 40;;
+
+    if(self.segmentedControl.selectedSegmentIndex == 1){
+        
+        NSLog(@"1 Selected");
+        
+        [UIView animateWithDuration:1 animations:^{
+        
+            //Change position of label
+            CGRect rectLabel = self.synopsisLabel.frame;
+            
+            rectLabel.origin.x -= offset;
+            
+            self.synopsisLabel.frame = rectLabel;
+            
+            //Change position of tableview
+
+            CGRect rectTable = self.tableView.frame;
+            
+            rectTable.origin.x -= offset;
+            
+            self.tableView.frame = rectTable;
+            
+            
+        }];
+        
+    } else {
+        
+        [UIView animateWithDuration:1 animations:^{
+            
+            //Change position of label
+            CGRect rectLabel = self.synopsisLabel.frame;
+            
+            rectLabel.origin.x += offset;
+            
+            self.synopsisLabel.frame = rectLabel;
+            
+            //Change position of tableview
+            
+            CGRect rectTable = self.tableView.frame;
+            
+            rectTable.origin.x += offset;
+            
+            self.tableView.frame = rectTable;
+            
+            
+        }];
+        
+        
+    }
     
     
     
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

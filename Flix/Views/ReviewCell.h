@@ -10,4 +10,6 @@
 
 @interface ReviewCell : UITableViewCell
 
+@property (weak, nonatomic) IBOutlet UILabel *reviewLabel;
+
 @end
