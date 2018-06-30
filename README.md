@@ -37,14 +37,15 @@ Please list two areas of the assignment you'd like to **discuss further with you
 1. Better use of nsuserdefaults?
 2. Buttons in the actual table cells
 
-## Video Walkthrough (*There are 2)
+## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://i.imgur.com/W0VeKj1.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://i.imgur.com/nCCBoCs.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
+Walkthroughs with optionals/additional: 
 
-Next Walkthrough: 
+https://i.imgur.com/W0VeKj1.gif
 
 https://i.imgur.com/pEmSml7.gif
 
