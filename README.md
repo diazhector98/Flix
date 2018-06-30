@@ -37,7 +37,7 @@ Please list two areas of the assignment you'd like to **discuss further with you
 1. Better use of nsuserdefaults?
 2. Buttons in the actual table cells
 
-## Video Walkthrough
+## Video Walkthrough (*There are 2)
 
 Here's a walkthrough of implemented user stories:
 
