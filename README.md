@@ -56,6 +56,8 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 Describe any challenges encountered while building the app.
 
+There were a lot of issues with NSUserDefaults and storing arrays, dictionaries and mutable arrays.
+
 ## Credits
 
 List an 3rd party libraries, icons, graphics, or other assets you used in your app.
