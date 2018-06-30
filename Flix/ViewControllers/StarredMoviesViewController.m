@@ -7,11 +7,13 @@
 //
 
 #import "StarredMoviesViewController.h"
+#import "StarredCell.h"
 #import "MovieCell.h"
 
 @interface StarredMoviesViewController () <UITableViewDelegate, UITableViewDataSource>
 
-@property (nonatomic, strong) NSArray *movies;
+@property (nonatomic, strong) NSMutableArray *movies;
+@property (nonatomic, strong) NSMutableArray *movieTitles;
 
 @end
 
@@ -25,6 +27,8 @@
     
     self.tableView.dataSource = self;
     
+    [self fetchStarredMovies];
+    
     
 }
 
@@ -34,11 +38,11 @@
     
     NSArray *movieIdArray = [defaults arrayForKey:@"movieId_array"];
     
-    NSLog(@"%@", movieIdArray);
-    
-    
     for(NSString *stringId in movieIdArray) {
         
+        NSLog(@"%@", stringId);
+        
+        [self fetchMovie:stringId];
         
     }
     
@@ -47,6 +51,42 @@
 
 -(void) fetchMovie:(NSString *) stringId {
     
+    NSString *urlString = [NSString stringWithFormat:@"%@%@%@",@"https://api.themoviedb.org/3/movie/", stringId, @"?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error != nil) {
+            NSLog(@"%@", [error localizedDescription]);
+            
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Cannot Get Movies" message:@"Internet connection appears to be offline" preferredStyle: UIAlertControllerStyleAlert];
+            
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Try Again" style: UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                
+                [self fetchMovie:stringId];
+                
+            }];
+            
+            [alert addAction: cancelAction];
+            
+            [self presentViewController:alert animated:YES completion:nil];
+            
+            
+        }
+        else {
+            NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+            
+            NSLog(@"%@", dataDictionary[@"title"]);
+            [self.movies addObject:dataDictionary[@"title"]];
+            
+            [self.tableView reloadData];
+        }
+        
+        
+    }];
+    [task resume];
     
     
 }
@@ -59,15 +99,21 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    return 20;
+    
+    NSLog(@"Count: %@", self.movies);
+    
+    return self.movies.count;
+
     
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    NSLog(@"Cell loaded");
+
+    StarredCell *cell = [tableView dequeueReusableCellWithIdentifier:@"StarCell" forIndexPath: indexPath];
     
-    MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"StarCell" forIndexPath: indexPath];
-    
+    cell.textLabel.text = @"Text";
     return cell;
     
 }
