@@ -29,7 +29,7 @@ The following **additional** features are implemented:
 - [X] Shows average score
 - [X] Shows the reviews for each movie in a table view
 - [X] Added segmented control and animation for synopsis and reviews
-- [X] Added starring system (however, couldn't retrieve each individual movie starred)
+- [X] Added starring system
 
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
